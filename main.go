@@ -21,9 +21,9 @@ type User struct {
 }
 
 const (
-	DB_USER     = "adminlevel1"
+	DB_USER     = "username"
 	DB_PASSWORD = "password"
-	DB_NAME     = "postgres"
+	DB_NAME     = "database"
 	DB_HOST     = "localhost"
 	DB_PORT     = "5432"
 )
@@ -46,20 +46,20 @@ func main() {
 	}
 	fmt.Println("Successfully connected to the database!")
 
-	// Create a new user
-	newUser := User{Name: "Candil", Email: "candil@example.com", Phone: "08558358358"}
-	userID, err := createUser(db, newUser)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("New user created with ID: %d\n", userID)
-
-	// // Get a user by ID
-	// user, err := getUserByID(db, 1)
+	// // Create a new user
+	// newUser := User{Name: "Candil", Email: "candil@example.com", Phone: "08558358358"}
+	// userID, err := createUser(db, newUser)
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }
-	// fmt.Printf("User fetched: %+v\n", user)
+	// fmt.Printf("New user created with ID: %d\n", userID)
+
+	// Get a user by ID
+	user, err := getUserByID(db, 1)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("User fetched: %+v\n", user)
 
 	// // Update a user
 	// user.Name = "John Doe Jr."
@@ -77,30 +77,30 @@ func main() {
 	// fmt.Printf("User with ID %d deleted\n", user.ID)
 }
 
-// Create a new user
-func createUser(db *sql.DB, user User) (int, error) {
-	var userID int
-	query := `
-		INSERT INTO users (name, email, phone, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5)
-		RETURNING id`
-	err := db.QueryRow(query, user.Name, user.Email, user.Phone, time.Now(), time.Now()).Scan(&userID)
-	if err != nil {
-		return 0, err
-	}
-	return userID, nil
-}
-
-// // Get a user by ID
-// func getUserByID(db *sql.DB, id int) (*User, error) {
-// 	user := User{}
-// 	query := "SELECT id, name, email, phone, created_at, updated_at, deleted_at FROM users WHERE id = $1"
-// 	err := db.QueryRow(query, id).Scan(&user.ID, &user.Name, &user.Email, &user.Phone, &user.CreatedAt, &user.UpdatedAt, &user.DeletedAt)
+// // Create a new user
+// func createUser(db *sql.DB, user User) (int, error) {
+// 	var userID int
+// 	query := `
+// 		INSERT INTO users (name, email, phone, created_at, updated_at)
+// 		VALUES ($1, $2, $3, $4, $5)
+// 		RETURNING id`
+// 	err := db.QueryRow(query, user.Name, user.Email, user.Phone, time.Now(), time.Now()).Scan(&userID)
 // 	if err != nil {
-// 		return nil, err
+// 		return 0, err
 // 	}
-// 	return &user, nil
+// 	return userID, nil
 // }
+
+// Get a user by ID
+func getUserByID(db *sql.DB, id int) (*User, error) {
+	user := User{}
+	query := "SELECT id, name, email, phone, created_at, updated_at, deleted_at FROM users WHERE id = $1"
+	err := db.QueryRow(query, id).Scan(&user.ID, &user.Name, &user.Email, &user.Phone, &user.CreatedAt, &user.UpdatedAt, &user.DeletedAt)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
 
 // // Update a user
 // func updateUser(db *sql.DB, user User) error {
